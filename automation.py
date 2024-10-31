@@ -63,6 +63,7 @@ def upgrade_helm_chart(values_file):
         results=subprocess.run(["helm", "upgrade", RELEASE_NAME, "twistlock/twistlock-defender", "-f", values_file], capture_output=True)
         logging.info(results.stdout.decode("utf-8"))
         logging.info(results.stderr.decode("utf-8"))
+        logging.info("Upgrade completed.")
 
 def check_version(headers, values_file):
 
