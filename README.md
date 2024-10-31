@@ -25,6 +25,15 @@ This automation will upgrade the helm chart to the n-1 version of Compute.
 
     cluster-tokens: [] #b64_encode each cluster service account token before putting in
 
+
+### Testing
+
+To test, modify the config.yml file and change the current-version to '33_01_000', and change the next-version to '33_01_136'. Once the run is finished, the current-version should be 33_01_136, and the next-version should be '33_01_137'.
+
+The version number of the image_name in values.yaml should be at '33_01_136'
+
+Note: Not real versions mentioned in this example, for testing purposes only
+
 ## How to run
 `python3 automation.py config.yml values.yaml`
 
