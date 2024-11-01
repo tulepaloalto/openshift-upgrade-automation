@@ -1,63 +1,36 @@
-# CICD Scan Results API EndPoints
+# Openshift Helm Chart Upgrade Automation
+This automation will upgrade the helm chart to the n-1 version of Compute.
 
 ## Download this repository
 
-## Install dependencies
-
-```pip3 install -r requirements.txt```
+	@@ -9,36 +8,56 @@ This automation will upgrade the helm chart to the n-1 version of Compute.
 
 ## Configuration File (config.yml)
 
-    prisma-cloud-password: #base64encoded secret access key
+    release-name:  <release-name> #name of the automation upgrade release
 
-    prisma-cloud-url: #should be exactly like your prisma cloud console, replace app with api 
-    ex. https://api.prismacloud.io/
+    current-version: '33_01_137' #This is the current defender version
 
-    prisma-cloud-username: #base64encoded access key id
+    hard-version: None #Set this value if you'd like to upgrade to a specific version
 
-    code-category:  #Pick one of [Secrets, IacMisconfiguration, Licenses, Vulnerabilities]
+    next-version: None #Leave as None, this will set itself when a new compute version is detected. 
 
+    prisma-cloud-password: <prisma cloud secret access key> #encode in b64 before putting in
+
+    prisma-cloud-url: https://us-east1.cloud.twistlock.com/us-2-158320372/api/v32.05/ #compute URL, can be found in Prisma Cloud Console -> Runtime Security -> Manage -> System -> Utilities -> Path to Console
+
+    prisma-cloud-username: <prisma cloud access key id> #encode in b64 before putting in
+
+    cluster-tokens: [] #b64_encode each cluster service account token before putting in
+
+
+### Testing
+
+To test, modify the config.yml file and change the current-version to '33_01_000', and change the next-version to '33_01_136'. Once the run is finished, the current-version should be 33_01_136, and the next-version should be '33_01_137'.
+
+The version number of the image_name in values.yaml should be at '33_01_136'
+
+Note: Not real versions mentioned in this example, for testing purposes only
 
 ## How to run
-
-There are 3 python scripts in this repository:
-
-### get_repositories.py
-The purpose of this endpoint: 
-
-    bridgecrew/api/v2/repositories?filter=CICD&page=0&pageSize=100&sortBy=lastScanDate&sortDir=DESC&includeStatus=false
-
-is to obtain the repositories ID that will be used to identify the CICD runIds. It is ordered by the last scanned date of the repositories.
-
-To run:
-
-    python3 get_repositories.py config.yml
-
-### get_runs.py
-The purpose of this endpoint: 
-
-    bridgecrew/api/v1/cicd/data/runs?repositoryId=<repo_id>&fetchAllBranches=true&fetchErrors=false
-
-is to obtain the runIds that will be used to obtain scan results from the scan results endpoint. 
-
-To run:
-
-    python3 get_runs.py config.yml <repo_id>
-
-Ex:
-    get_runs.py config.yml 43de2057-e942-4834-b52f-d7327b1f9137
-
-### cicd_scan_results.py
-The purpose of this endpoint: 
-
-    bridgecrew/api/v2/errors/code_review_scan/resources/policies
-
-is to obtain the scan results from the provided repository, resource, and runId. 
-
-To run:
-
-    python3 get_runs.py config.yml <repo_id> <resource_name> <runId>
-
-Ex:
-    cicd_scan_results.py config.yml 43de2057-e942-4834-b52f-d7327b1f9137 /planfile.json:azurerm_storage_account.storage_account 1159120      
-
+`python3 automation.py config.yml values.yaml`
